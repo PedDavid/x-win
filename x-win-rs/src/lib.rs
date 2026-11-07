@@ -270,6 +270,7 @@ mod tests {
   }
 
   #[test]
+  #[ignore = "Live desktop: requires a focused window"]
   fn test_get_active_window() -> Result<()> {
     match get_active_window() {
       Ok(window_info) => test_struct(window_info),
@@ -278,6 +279,7 @@ mod tests {
   }
 
   #[test]
+  #[ignore = "Live desktop: requires open windows"]
   fn test_get_open_windows() -> Result<()> {
     match get_open_windows() {
       Ok(open_windows) => {
@@ -310,6 +312,7 @@ mod tests {
   }
 
   #[test]
+  #[ignore = "Live desktop: requires a backend with icon support (not Hyprland)"]
   fn test_get_window_icon_from_active_window() -> Result<()> {
     match get_active_window() {
       Ok(window_info) => match get_window_icon(&window_info) {
@@ -326,6 +329,7 @@ mod tests {
   }
 
   #[test]
+  #[ignore = "Live desktop: requires a backend with icon support (not Hyprland)"]
   fn test_get_window_icon_from_open_windows() -> Result<()> {
     match get_open_windows() {
       Ok(open_windows) => match open_windows.first() {

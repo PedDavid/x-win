@@ -44,6 +44,7 @@ windows = { version = "0.62.2", features = [
 ] }
 
 [target.'cfg(target_os = "linux")'.dependencies]
+libc       = "0.2"
 image      = { version = "0.25.10" }
 serde_json = { version = "1.0.154" }
 x11        = { version = "2.21.0", features = ["xlib"], optional = true }
