@@ -15,13 +15,13 @@ use common::{
 };
 use error::xwin_error;
 use napi::{JsNumber, Result};
-use x_win::{empty_entity, get_active_window, get_browser_url, get_open_windows, get_window_icon};
+use x_win::{get_active_window, get_browser_url, get_open_windows, get_window_icon};
 
 #[macro_use]
 extern crate napi_derive;
 
 use napi::threadsafe_function::{ThreadsafeFunction, ThreadsafeFunctionCallMode};
-use std::{thread, time::Duration};
+use std::time::Duration;
 
 use once_cell::sync::Lazy;
 use std::sync::Mutex;
@@ -318,43 +318,17 @@ pub fn subscribe_active_window(
 
   let id = thread_manager
     .start_thread(move |receiver| {
-      let mut current_window: WindowInfo = empty_entity().into();
-      let mut first_loop: bool = true;
-      loop {
-        match receiver.try_recv() {
-          Ok(_) | Err(std::sync::mpsc::TryRecvError::Disconnected) => {
-            break;
-          }
-          _ => {
-            match get_active_window() {
-              Ok(new_current_window) => {
-                if new_current_window.id.ne(&current_window.id)
-                || new_current_window.title.ne(&current_window.title)
-                // || new_current_window
-                //   .info
-                //   .process_id
-                //   .ne(&current_window.info.process_id)
-                || (new_current_window.id.eq(&0) && first_loop)
-                {
-                  current_window = new_current_window.clone().into();
-                  callback.call(
-                    Ok(new_current_window.into()),
-                    ThreadsafeFunctionCallMode::Blocking,
-                  );
-                }
-              }
-              Err(err) => {
-                callback.call(Err(xwin_error(err)), ThreadsafeFunctionCallMode::Blocking);
-                break;
-              }
-            }
-            thread::sleep(Duration::from_millis(interval));
-          }
-        }
-        if first_loop {
-          first_loop = false;
-        }
-      }
+      common::subscription::run(
+        receiver,
+        Duration::from_millis(interval),
+        get_active_window,
+        |result| {
+          callback.call(
+            result.map(WindowInfo::from).map_err(xwin_error),
+            ThreadsafeFunctionCallMode::NonBlocking,
+          );
+        },
+      );
     })
     .map_err(napi::Error::from_reason)?;
 

@@ -8,7 +8,7 @@
 ![NPM Version](https://img.shields.io/npm/v/%40miniben90%2Fx-win)
 [![Sponsor me!](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/miniben-90/button)
 
-This project uses Rust and napi-rs to make it easy to obtain the active window or an array of open windows. It works on Microsoft Windows (10, 11), [Linux (with X server)](#linux), [Linux (with Gnome =< 45)](#wayland), and [macOS 10.6+](#darwin).
+This project uses Rust and napi-rs to make it easy to obtain the active window or an array of open windows. It works on Microsoft Windows (10, 11), [Linux (with X server)](#linux), [Linux (with Gnome =< 45)](#wayland), [Hyprland](#hyprland), and [macOS 10.6+](#darwin).
 
 ## How to install
 
@@ -188,7 +188,20 @@ sudo apt install libxcb1-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0
 > ⚠️**Warning**<br />
 > Recovery url is not available on linux
 
+### Hyprland
+
+This fork supports Hyprland through direct, bounded Unix-socket IPC, without a
+GNOME extension or a subprocess per poll. Active/open window APIs and Node
+subscriptions retain their existing public shapes. Icons are gracefully empty;
+Linux memory units remain virtual-memory pages. Live-tested on Hyprland 0.56.2.
+
+See [backend contracts and standalone smoke tests](docs/hyprland.md) and
+[validation results](docs/hyprland-validation.md), including polling identity
+and session-lock visibility limitations. This is not generic Wayland support.
+
 ### Wayland
+
+The following extension instructions apply to **GNOME**, not Hyprland.
 
 In order to recover data, you'll need to install and activate an extension designed for systems running GNOME version 41 or newer (as evaluation is disabled from this version onward).
 
